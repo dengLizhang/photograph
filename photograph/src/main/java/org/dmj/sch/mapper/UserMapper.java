@@ -1,6 +1,7 @@
 package org.dmj.sch.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.dmj.sch.mapper.pojo.User;
 
 import java.util.List;
@@ -11,4 +12,5 @@ import java.util.List;
 @Mapper
 public interface UserMapper {
     List<User> loadUsers();
+    User loadUserByName(@Param("username") String username);
 }
