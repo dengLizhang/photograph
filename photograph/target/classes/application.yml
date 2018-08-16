@@ -1,0 +1,41 @@
+
+spring:
+  thymeleaf:
+    cache: false
+db:
+  datasource:
+    driver: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.31.28:3306/chpsdatabase?useUnicode=true&characterEncoding=UTF-8&serverTimeZone=GMT&useSSL=false
+    username: root
+    password: dmj940210
+    initialSize: 5
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 30000
+    useGlobalDataSourceStat: true
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    filters: stat,wall,log4j
+    maxPoolPreparedStatementPerConnectionSize: 20
+    poolPreparedStatements: true
+    validationQuery: SELECT 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+
+ Loggers:
+    Root:
+      level: info
+      AppenderRef:
+        - ref: CONSOLE
+        - ref: ROLLING_FILE
+      Logger: # 为com.lee包配置特殊的Log级别，方便调试
+        - name: org.dmj.sch.mapper
+          additivity: false
+          level: info
+          AppenderRef:
+            - ref: CONSOLE
+            - ref: ROLLING_FILE
+
+
