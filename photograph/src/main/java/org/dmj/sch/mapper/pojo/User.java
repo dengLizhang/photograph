@@ -10,4 +10,10 @@ public class User {
     private int id;
     private String name;
     private String desc;
+    private String img;
+    private String phone;
+    private String password;
+    private String email;
+    private String evaluate;
 }
+
