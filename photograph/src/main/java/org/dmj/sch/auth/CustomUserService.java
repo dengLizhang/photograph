@@ -1,9 +1,11 @@
 package org.dmj.sch.auth;
 
+import org.dmj.sch.mapper.PermissionMapper;
 import org.dmj.sch.mapper.UserMapper;
-import org.dmj.sch.mapper.pojo.Role;
+import org.dmj.sch.mapper.pojo.Permission;
 import org.dmj.sch.mapper.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,21 +22,26 @@ import java.util.List;
 public class CustomUserService implements UserDetailsService{
     @Autowired
     UserMapper userMapper;
-    @Override
-    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        User user = userMapper.loadUserByName(s);
-        if(user == null){
-            throw new UsernameNotFoundException("用户名不存在");
+    @Autowired
+    PermissionMapper permissionMapper;
+
+    public UserDetails loadUserByUsername(String username) {
+        User user = userMapper.loadUserByName(username);
+        if (user != null) {
+            List<Permission> permissions = permissionMapper.findByAdminUserId(user.getId());
+            List<GrantedAuthority> grantedAuthorities = new ArrayList <>();
+            for (Permission permission : permissions) {
+                if (permission != null && permission.getName()!=null) {
+
+                    GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(permission.getName());
+                    //1：此处将权限信息添加到 GrantedAuthority 对象中，在后面进行全权限验证时会使用GrantedAuthority 对象。
+                    grantedAuthorities.add(grantedAuthority);
+                }
+            }
+            return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), grantedAuthorities);
+        } else {
+            throw new UsernameNotFoundException("admin: " + username + " do not exist!");
         }
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        //用于添加用户的权限。只要把用户权限添加到authorities 就万事大吉。
-        for(Role role:user.getRoles())
-        {
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
-            System.out.println(role.getName());
-        }
-        return new org.springframework.security.core.userdetails.User(user.getUsername(),
-                user.getPassword(), authorities);
     }
 
 }

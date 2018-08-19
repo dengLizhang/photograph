@@ -3,10 +3,19 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dmj.sch.mapper.UserMapper">
 
+    <resultMap id="userMap" type="org.dmj.sch.mapper.pojo.User">
+        <id property="id" column="ID"/>
+        <result property="name" column="name"/>
+        <result property="password" column="password"/>
+        <collection property="roles" ofType="org.dmj.sch.mapper.pojo.Role">
+            <result column="name" property="name"/>
+        </collection>
+
+    </resultMap>
     <select id="loadUsers" resultType="org.dmj.sch.mapper.pojo.User">
         SELECT  id,`name`,`desc` FROM sys_user
     </select>
-    <select id="loadUserByName" parameterType="string" resultType="org.dmj.sch.mapper.pojo.User">
+    <select id="loadUserByName" parameterType="string" resultMap="userMap">
         select u.*
         ,r.role
         from sys_user u
